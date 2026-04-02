@@ -13,7 +13,7 @@ Creates `.excalidraw` files (pure JSON) that the Obsidian Excalidraw plugin open
 2. **Choose diagram type** — match structure to content (see table below)
 3. **Design the diagram** — plan layout before generating JSON; read [design-patterns.md](references/design-patterns.md) for visual patterns and section-by-section strategy for large diagrams
 4. **Generate JSON** — pull colors from [color-palette.md](references/color-palette.md); use templates from [element-templates.md](references/element-templates.md)
-5. **Save file** — write to `<topic>.excalidraw` in the current working directory
+5. **Save file** — write to `<topic>.excalidraw.md` in the current working directory
 6. **Confirm to user** — tell them the file name and to open it in Obsidian
 
 **For large or complex diagrams: build JSON one section at a time.** Do NOT generate the full diagram in a single pass — the output token limit will truncate it and produce broken JSON. See [design-patterns.md](references/design-patterns.md) for the section-by-section workflow.
@@ -52,23 +52,34 @@ Creates `.excalidraw` files (pure JSON) that the Obsidian Excalidraw plugin open
 
 ## File Format
 
-`.excalidraw` files are plain JSON. Write the JSON directly — no markdown wrapper needed.
+Save as `.excalidraw.md` — the native format for the Obsidian Excalidraw plugin v2.x. Raw `.excalidraw` JSON files open in "compatibility mode" in newer plugin versions.
 
+```markdown
+---
+
+excalidraw-plugin: parsed
+tags: [excalidraw]
+
+---
+==⚠  Switch to EXCALIDRAW VIEW in the MORE OPTIONS menu of this document. ⚠==
+
+
+# Excalidraw Data
+
+## Text Elements
+Element label ^elementId
+
+%%
+## Drawing
 ```json
-{
-  "type": "excalidraw",
-  "version": 2,
-  "source": "https://github.com/zsviczian/obsidian-excalidraw-plugin",
-  "elements": [ ... ],
-  "appState": {
-    "gridSize": null,
-    "viewBackgroundColor": "#ffffff"
-  },
-  "files": {}
-}
+{"type":"excalidraw","version":2,"source":"https://excalidraw.com","elements":[...],"appState":{"gridSize":null,"viewBackgroundColor":"#ffffff"},"files":{}}
+```
+%%
 ```
 
-The Obsidian Excalidraw plugin opens `.excalidraw` files directly in drawing view. No frontmatter, no wrappers.
+**Text Elements section**: list each text element as `text content ^elementId` (one per line, newlines in text collapsed to spaces). This section is used for vault search and internal block links — it can be empty but should be populated.
+
+**Drawing section**: the full Excalidraw JSON on a single line between the ` ```json ` fence and `%%` delimiters. The Obsidian Excalidraw plugin opens this file directly in drawing view.
 
 ---
 
@@ -173,12 +184,12 @@ Use `"strokeStyle": "dashed"` for optional paths, weak associations, or async fl
 
 | Pattern | Example |
 |---------|---------|
-| `<topic>.excalidraw` | `auth-flow.excalidraw` |
-| `<topic>.excalidraw` | `project-ideas.excalidraw` |
-| `<topic>.excalidraw` | `backend-services.excalidraw` |
+| `<topic>.excalidraw.md` | `auth-flow.excalidraw.md` |
+| `<topic>.excalidraw.md` | `project-ideas.excalidraw.md` |
+| `<topic>.excalidraw.md` | `backend-services.excalidraw.md` |
 
 Save to current working directory. After saving, tell the user:
-> "Saved as `<filename>.excalidraw`. Open it in Obsidian — it will open directly in Excalidraw view."
+> "Saved as `<filename>.excalidraw.md`. Open it in Obsidian — it will open directly in Excalidraw view."
 
 ---
 
@@ -214,4 +225,4 @@ Before saving the file:
 - [ ] All colors from [color-palette.md](references/color-palette.md) — no invented colors
 - [ ] No emoji in text — use color coding instead
 - [ ] Diagram argues a relationship, not just labels boxes
-- [ ] File is saved as `.excalidraw` (pure JSON, no markdown wrapper)
+- [ ] File is saved as `.excalidraw.md` with correct frontmatter (`excalidraw-plugin: parsed`), `## Text Elements` section, and JSON inside ` ```json ` / `%%` delimiters
